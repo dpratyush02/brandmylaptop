@@ -3,7 +3,6 @@
 import React from 'react';
 import { SpotData } from '../laptop/LaptopSpotZone';
 import { useCurrency } from '../currency/CurrencyProvider';
-import { minNextBid } from '@/lib/currency';
 import { ExternalLink, MousePointerClick } from 'lucide-react';
 
 interface SpotCardProps {

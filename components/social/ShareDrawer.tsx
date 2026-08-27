@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { SpotData } from '../laptop/LaptopSpotZone';
 import { formatMoney } from '@/lib/currency';
-import { Share2, Check, Copy, MessageCircle } from 'lucide-react';
+import { Check, Copy, MessageCircle } from 'lucide-react';
 
 interface ShareDrawerProps {
   spot?: SpotData | null;

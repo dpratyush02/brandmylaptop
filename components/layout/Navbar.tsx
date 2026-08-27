@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Eye, Users, ArrowRight, Menu, X } from 'lucide-react';
+import { Eye, ArrowRight, Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onBidClick?: () => void;
