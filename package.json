@@ -14,7 +14,7 @@
     "clsx": "^2.1.1",
     "dodopayments": "^1.1.0",
     "lucide-react": "^0.475.0",
-    "next": "15.3.4",
+    "next": "15.3.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "standardwebhooks": "^1.0.0",
@@ -28,7 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "15.3.8",
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
