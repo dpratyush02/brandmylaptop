@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 
 interface FooterProps {
   onBidClick?: () => void;
@@ -36,7 +35,6 @@ export const Footer: React.FC<FooterProps> = ({ onBidClick }) => {
             <a href="#auction" className="hover:text-white transition">Auction</a>
             <a href="#how-it-works" className="hover:text-white transition">How it works</a>
             <a href="#faq" className="hover:text-white transition">FAQ</a>
-            <Link href="/admin" className="hover:text-white transition">Admin</Link>
           </div>
         </div>
       </div>
