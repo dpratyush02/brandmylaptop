@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,6 +8,7 @@ export async function GET(
   context: { params: { bidId: string } | Promise<{ bidId: string }> }
 ) {
   try {
+    await ensureDatabase();
     const { bidId } = await context.params;
     if (!bidId) {
       return NextResponse.json({ success: false, error: 'Missing bid id' }, { status: 400 });

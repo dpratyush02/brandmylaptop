@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 import { INITIAL_SPOTS } from '@/lib/demo-data';
 import { recordPageView, getRealMetrics } from '@/lib/presence';
 
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    await ensureDatabase();
     let auction = await db.auction.findFirst({
       include: {
         spots: {

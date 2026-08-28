@@ -153,6 +153,7 @@ export default function HomePage() {
             endTime={auction?.endTime || new Date(Date.now() + 72 * 60 * 60 * 1000)}
             occupiedCount={occupiedCount}
             auctionClosed={isAuctionClosed}
+            hasStarted={auction?.hasStarted ?? (occupiedCount > 0)}
           />
           <SpotCardGrid
             spots={spots}

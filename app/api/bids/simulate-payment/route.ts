@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureDatabase();
     const { bidId, simulateSuccess = true } = await request.json();
 
     if (!bidId) {
@@ -82,15 +83,31 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 5. Update auction total raised
+    // 5. Update auction total raised & start 72h countdown on first bid
     const allSpots = await db.spot.findMany({
       where: { auctionId: bid.spot.auctionId },
     });
     const newTotalRaised = allSpots.reduce((sum, s) => sum + (s.currentBid > 0 ? s.currentBid : 0), 0);
 
+    const auctionUpdates: {
+      totalRaised: number;
+      status?: string;
+      startTime?: Date;
+      endTime?: Date;
+    } = {
+      totalRaised: newTotalRaised,
+    };
+
+    if (bid.spot.auction.status === 'PENDING_FIRST_BID' || !bid.spot.auction.startTime) {
+      const now = new Date();
+      auctionUpdates.status = 'ACTIVE';
+      auctionUpdates.startTime = now;
+      auctionUpdates.endTime = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+    }
+
     await db.auction.update({
       where: { id: bid.spot.auctionId },
-      data: { totalRaised: newTotalRaised },
+      data: auctionUpdates,
     });
 
     return NextResponse.json({

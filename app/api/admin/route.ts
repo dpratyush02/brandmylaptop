@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 import { INITIAL_SPOTS } from '@/lib/demo-data';
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin_brandmylaptop_2026';
@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    await ensureDatabase();
     const auction = await db.auction.findFirst({
       include: {
         spots: {

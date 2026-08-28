@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 import { verifyWebhookSignature } from '@/lib/dodo';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureDatabase();
     const rawBody = await request.text();
     const headersList: Record<string, string | string[] | undefined> = {};
     
@@ -118,9 +121,26 @@ export async function POST(request: NextRequest) {
       });
       const newTotalRaised = allSpots.reduce((sum, s) => sum + (s.currentBid > 0 ? s.currentBid : 0), 0);
 
+      const auctionUpdates: {
+        totalRaised: number;
+        status?: string;
+        startTime?: Date;
+        endTime?: Date;
+      } = {
+        totalRaised: newTotalRaised,
+      };
+
+      // Start the 72-hour countdown on the very first confirmed bid
+      if (bid.spot.auction.status === 'PENDING_FIRST_BID' || !bid.spot.auction.startTime) {
+        const now = new Date();
+        auctionUpdates.status = 'ACTIVE';
+        auctionUpdates.startTime = now;
+        auctionUpdates.endTime = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+      }
+
       await db.auction.update({
         where: { id: bid.spot.auctionId },
-        data: { totalRaised: newTotalRaised },
+        data: auctionUpdates,
       });
 
       console.log(`[Bid Activated] Spot #${bid.spot.number} is now held by ${bid.brandName} at $${bid.amount}`);

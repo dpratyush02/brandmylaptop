@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 import { createCheckoutSession } from '@/lib/dodo';
 import { formatMoney, minNextBid } from '@/lib/currency';
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureDatabase();
     const body = await request.json();
     const {
       spotId,
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
       logoUrl = '',
     } = body;
 
-    if (!spotId || !spotNumber || !bidAmount || !name || !email || !companyName) {
+    if (!spotNumber || !bidAmount || !name || !email || !companyName) {
       return NextResponse.json(
         { success: false, error: 'Missing required bid details (Spot, Amount, Name, Email, Brand Name)' },
         { status: 400 }
@@ -32,8 +33,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const spot = await db.spot.findUnique({
-      where: { id: spotId },
+    const num = parseInt(String(spotNumber));
+    const spot = await db.spot.findFirst({
+      where: {
+        OR: [
+          ...(spotId ? [{ id: spotId }] : []),
+          { number: num },
+        ],
+      },
       include: { auction: true },
     });
 
@@ -44,7 +51,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (spot.auction.status !== 'ACTIVE' || new Date(spot.auction.endTime).getTime() <= Date.now()) {
+    if (
+      spot.auction.status === 'CLOSED' ||
+      spot.auction.status === 'FINALIZED' ||
+      (spot.auction.status === 'ACTIVE' && spot.auction.endTime && new Date(spot.auction.endTime).getTime() <= Date.now())
+    ) {
       return NextResponse.json(
         { success: false, error: 'This auction has ended. No further bids are accepted.' },
         { status: 400 }

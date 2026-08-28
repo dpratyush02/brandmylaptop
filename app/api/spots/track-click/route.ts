@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDatabase } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureDatabase();
     const body = await request.json();
     const { spotId, spotNumber } = body;
 
