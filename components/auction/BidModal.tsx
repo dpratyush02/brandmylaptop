@@ -134,6 +134,7 @@ export const BidModal: React.FC<BidModalProps> = ({
         
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#1f1f1f] flex items-start justify-between bg-[#0e0e0e]">
+          <div>
             <div className="font-mono text-[12px] font-bold text-[#c8f542]">
               Spot #{spot.number.toString().padStart(2, '0')} {spot.currentBid > 0 ? '· Outbid' : ''}
             </div>
