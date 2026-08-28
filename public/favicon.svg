@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#09090b" stroke="#27272a" stroke-width="1.5"/>
+  <!-- Laptop Screen/Lid -->
+  <path d="M7 9a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v10H7V9z" fill="#18181b" stroke="#f4f4f5" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Laptop Base -->
+  <path d="M4 22h24l-1.5 2.5a1 1 0 0 1-.9.5H6.4a1 1 0 0 1-.9-.5L4 22z" fill="#27272a" stroke="#f4f4f5" stroke-width="1.2"/>
+  <!-- Glowing Neon Sticker on Lid -->
+  <rect x="13" y="11" width="6" height="5" rx="1.5" fill="#c8f542"/>
+</svg>
