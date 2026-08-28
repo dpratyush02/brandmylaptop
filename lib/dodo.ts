@@ -6,7 +6,7 @@ const DODO_ENV = (process.env.DODO_PAYMENTS_ENVIRONMENT === 'live_mode' ? 'live_
   | 'live_mode'
   | 'test_mode';
 const DODO_WEBHOOK_SECRET = process.env.DODO_WEBHOOK_SECRET || '';
-const BID_PRODUCT_NAME = 'BrandMyLaptop Spot Bid';
+const BID_PRODUCT_NAME = 'BrandMyLaptop Spot Bid V2';
 
 let dodoClientInstance: DodoPayments | null = null;
 let cachedProductId: string | null = process.env.DODO_PRODUCT_ID || null;
@@ -56,7 +56,7 @@ async function getOrCreateBidProduct(client: DodoPayments): Promise<string> {
   try {
     const page = await client.products.list({ page_size: 50 });
     for (const product of page.getPaginatedItems()) {
-      if (product.name === BID_PRODUCT_NAME || product.metadata?.bml === 'spot_bid') {
+      if (product.name === BID_PRODUCT_NAME || product.metadata?.bml === 'spot_bid_v2') {
         cachedProductId = product.product_id;
         return product.product_id;
       }
@@ -68,16 +68,16 @@ async function getOrCreateBidProduct(client: DodoPayments): Promise<string> {
   const created = await client.products.create({
     name: BID_PRODUCT_NAME,
     description: 'Auction bid for a physical sticker spot on the HP laptop lid',
-    tax_category: 'saas',
+    tax_category: 'digital_products',
     price: {
       type: 'one_time_price',
       currency: 'USD',
-      price: 1000,
+      price: 100, // $1.00 base so any bid >= $1 is accepted by Dodo
       discount: 0,
       purchasing_power_parity: false,
       pay_what_you_want: true,
     },
-    metadata: { bml: 'spot_bid' },
+    metadata: { bml: 'spot_bid_v2' },
   });
 
   cachedProductId = created.product_id;
