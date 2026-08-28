@@ -33,9 +33,7 @@ export async function GET() {
       auction = await db.auction.create({
         data: {
           title: 'BrandMyLaptop Launch Auction',
-          status: 'ACTIVE',
-          startTime,
-          endTime,
+          status: 'PENDING_FIRST_BID',
           totalRaised: 0,
         },
         include: {

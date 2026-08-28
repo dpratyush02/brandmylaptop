@@ -281,13 +281,13 @@ export default function AdminPage() {
             <button
               type="button"
               onClick={() => {
-                if (confirm('Reset to initial demo data?')) {
+                if (confirm('Reset auction to clean slate (clears all test bids and resets all 10 spots)?')) {
                   handleAdminAction('RESET_DEMO_DATA');
                 }
               }}
-              className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 text-xs font-medium transition ml-auto"
+              className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-red-950/40 text-red-400 border border-red-900/30 text-xs font-semibold transition ml-auto"
             >
-              Reset Demo Data
+              Reset to Clean Slate (0 Bids)
             </button>
           </div>
         </div>

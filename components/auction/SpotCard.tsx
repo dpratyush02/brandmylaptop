@@ -155,7 +155,7 @@ export const SpotCard: React.FC<SpotCardProps> = ({
             }}
             className="text-[12px] font-bold font-mono text-[#c8f542] hover:text-[#d6ff63] bg-[#c8f542]/10 hover:bg-[#c8f542]/20 px-2.5 py-1 rounded border border-[#c8f542]/30 transition whitespace-nowrap"
           >
-            {viewerState === 'outbid' ? 'Bid again →' : 'Bid →'}
+            {viewerState === 'outbid' ? 'Outbid →' : isOccupied ? 'Outbid →' : 'Bid →'}
           </button>
         )}
       </div>

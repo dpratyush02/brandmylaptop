@@ -104,7 +104,11 @@ export const LaptopSpotZone: React.FC<LaptopSpotZoneProps> = ({
           <span className={isOccupied ? 'text-[#c8f542] font-semibold' : 'text-zinc-300'}>
             {isOccupied ? `${spot.currentBrandName} (${displayAmount})` : `Open (${displayAmount})`}
           </span>
-          {!isWon && <span className="text-[#c8f542] font-bold">· Click to Bid</span>}
+          {!isWon && (
+            <span className="text-[#c8f542] font-bold">
+              {isOccupied ? '· Click to Outbid' : '· Click to Bid'}
+            </span>
+          )}
         </div>
       </div>
     </button>

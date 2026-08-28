@@ -134,11 +134,12 @@ export const BidModal: React.FC<BidModalProps> = ({
         
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#1f1f1f] flex items-start justify-between bg-[#0e0e0e]">
-          <div>
             <div className="font-mono text-[12px] font-bold text-[#c8f542]">
-              Spot #{spot.number.toString().padStart(2, '0')}
+              Spot #{spot.number.toString().padStart(2, '0')} {spot.currentBid > 0 ? '· Outbid' : ''}
             </div>
-            <h3 className="text-lg font-bold text-white tracking-tight">{spot.position}</h3>
+            <h3 className="text-lg font-bold text-white tracking-tight">
+              {spot.currentBid > 0 ? `Outbid ${spot.position}` : `Bid on ${spot.position}`}
+            </h3>
             <p className="text-[11px] font-mono text-[#8a8a84]">{spot.size} · {spot.dimensions}</p>
           </div>
           <button 
@@ -261,7 +262,11 @@ export const BidModal: React.FC<BidModalProps> = ({
             disabled={isSubmitting || auctionClosed}
             className="w-full py-3 bg-[#c8f542] hover:bg-[#d6ff63] text-[#111] text-sm font-bold rounded transition disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating checkout…' : `Continue to payment (${format(parseFloat(bidAmount) || minRequired)}) →`}
+            {isSubmitting
+              ? 'Creating checkout…'
+              : spot.currentBid > 0
+              ? `Place Outbid (${format(parseFloat(bidAmount) || minRequired)}) →`
+              : `Place Bid & Pay (${format(parseFloat(bidAmount) || minRequired)}) →`}
           </button>
           <p className="text-center text-[10px] font-mono text-[#5c5c56]">Charged via Dodo Payments Checkout Sessions</p>
         </form>
