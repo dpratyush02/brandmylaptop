@@ -31,10 +31,31 @@ export const Footer: React.FC<FooterProps> = ({ onBidClick }) => {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 text-[12px] text-[#5c5c56]">
           <span>© {new Date().getFullYear()} BrandMyLaptop</span>
+
+          <div className="flex items-center gap-1 text-[#8a8a84]">
+            <span>Built with ❤️ by</span>
+            <a
+              href="https://x.com/dpratyush02"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#c8f542] hover:text-[#d6ff63] font-medium transition"
+            >
+              @dpratyush02
+            </a>
+          </div>
+
           <div className="flex items-center gap-5">
             <a href="#auction" className="hover:text-white transition">Auction</a>
             <a href="#how-it-works" className="hover:text-white transition">How it works</a>
             <a href="#faq" className="hover:text-white transition">FAQ</a>
+            <a
+              href="https://x.com/dpratyush02"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#8a8a84] hover:text-white transition"
+            >
+              𝕏 / @dpratyush02
+            </a>
           </div>
         </div>
       </div>
