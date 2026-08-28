@@ -119,8 +119,8 @@ export async function GET() {
     });
 
     // Track real visit and get live metrics
-    recordPageView();
-    const { liveVisitors, totalViews } = getRealMetrics();
+    await recordPageView();
+    const { liveVisitors, totalViews } = await getRealMetrics();
 
     return NextResponse.json({
       success: true,
@@ -174,8 +174,8 @@ export async function GET() {
         totalSpots: 10,
         totalClicks: 0,
         totalBidsCount: 0,
-        liveVisitors: getRealMetrics().liveVisitors,
-        totalViews: getRealMetrics().totalViews,
+        liveVisitors: (await getRealMetrics()).liveVisitors,
+        totalViews: (await getRealMetrics()).totalViews,
       },
       serverTime: new Date().toISOString(),
     });

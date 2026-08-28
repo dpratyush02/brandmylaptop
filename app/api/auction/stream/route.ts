@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
           if (auction) {
             recordHeartbeat(clientId);
-            const metrics = getRealMetrics();
+            const metrics = await getRealMetrics();
             const data = JSON.stringify({
               type: 'AUCTION_UPDATE',
               auction,

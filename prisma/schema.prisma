@@ -115,5 +115,6 @@ model AdminConfig {
   id           String   @id @default("default_config")
   outbidPolicy String   @default("V1_MANUAL_REVIEW") // Policy: explain V1 non-refundable ad placement or credit
   siteActive   Boolean  @default(true)
+  pageViews    Int      @default(1)
   updatedAt    DateTime @updatedAt
 }
