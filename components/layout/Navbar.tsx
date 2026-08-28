@@ -14,14 +14,15 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onBidClick,
   auctionClosed = false,
-  liveVisitors = 38,
-  totalViews = 14280,
+  liveVisitors = 1,
+  totalViews,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const formattedViews = totalViews >= 1000
-    ? `${(totalViews / 1000).toFixed(1)}k`
-    : totalViews.toString();
+  const displayViews = typeof totalViews === 'number' && totalViews > 0 ? totalViews : 1;
+  const formattedViews = displayViews >= 1000
+    ? `${(displayViews / 1000).toFixed(1)}k`
+    : displayViews.toString();
 
   const navLinks = [
     { name: 'Auction', href: '#auction' },

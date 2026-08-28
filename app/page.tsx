@@ -128,8 +128,8 @@ export default function HomePage() {
       <Navbar
         onBidClick={handleOpenGeneralBid}
         auctionClosed={isAuctionClosed}
-        liveVisitors={liveStats?.liveVisitors || 38}
-        totalViews={liveStats?.totalViews || 14280}
+        liveVisitors={liveStats?.liveVisitors ?? 1}
+        totalViews={liveStats?.totalViews ?? 1}
       />
 
       <OutbidBanner spots={spots} onBidAgain={handleSpotSelect} />
