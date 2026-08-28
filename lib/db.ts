@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const INITIAL_SPOTS_CATALOG = [
+export const INITIAL_SPOTS_CATALOG = [
   { number: 1, position: 'Top Left', size: 'Medium', dimensions: '8.0cm × 5.0cm', startingPrice: 1, minBidIncrement: 1 },
   { number: 2, position: 'Top Center', size: 'Large', dimensions: '9.5cm × 5.5cm', startingPrice: 10, minBidIncrement: 1 },
   { number: 3, position: 'Top Right', size: 'Large', dimensions: '9.5cm × 5.5cm', startingPrice: 30, minBidIncrement: 1 },
@@ -12,13 +12,6 @@ const INITIAL_SPOTS_CATALOG = [
   { number: 9, position: 'Bottom Left', size: 'Compact', dimensions: '6.5cm × 4.0cm', startingPrice: 15, minBidIncrement: 1 },
   { number: 10, position: 'Bottom Right', size: 'Compact', dimensions: '6.5cm × 4.0cm', startingPrice: 15, minBidIncrement: 1 },
 ];
-
-// On Vercel, ensure SQLite database is stored in writable /tmp directory
-if (process.env.VERCEL) {
-  if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('./dev.db') || process.env.DATABASE_URL === 'file:./dev.db') {
-    process.env.DATABASE_URL = 'file:/tmp/dev.db';
-  }
-}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -43,127 +36,7 @@ export async function ensureDatabase(): Promise<void> {
 
   initPromise = (async () => {
     try {
-      // 1. Create tables if they do not exist
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "Auction" (
-          "id" TEXT PRIMARY KEY,
-          "title" TEXT NOT NULL DEFAULT 'BrandMyLaptop Launch Auction',
-          "status" TEXT NOT NULL DEFAULT 'PENDING_FIRST_BID',
-          "startTime" DATETIME,
-          "endTime" DATETIME,
-          "totalRaised" REAL NOT NULL DEFAULT 0,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "Spot" (
-          "id" TEXT PRIMARY KEY,
-          "auctionId" TEXT NOT NULL,
-          "number" INTEGER NOT NULL UNIQUE,
-          "position" TEXT NOT NULL,
-          "size" TEXT NOT NULL,
-          "dimensions" TEXT NOT NULL,
-          "startingPrice" REAL NOT NULL DEFAULT 25,
-          "currentBid" REAL NOT NULL DEFAULT 0,
-          "minBidIncrement" REAL NOT NULL DEFAULT 1,
-          "currentBidderName" TEXT,
-          "currentBidderEmail" TEXT,
-          "currentBrandName" TEXT,
-          "currentLogoUrl" TEXT,
-          "currentWebsite" TEXT,
-          "status" TEXT NOT NULL DEFAULT 'AVAILABLE',
-          "bidCount" INTEGER NOT NULL DEFAULT 0,
-          "clicksCount" INTEGER NOT NULL DEFAULT 0,
-          "stickerStatus" TEXT NOT NULL DEFAULT 'PENDING',
-          "proofImageUrl" TEXT,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY ("auctionId") REFERENCES "Auction" ("id") ON DELETE CASCADE
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "Bid" (
-          "id" TEXT PRIMARY KEY,
-          "spotId" TEXT NOT NULL,
-          "bidderName" TEXT NOT NULL,
-          "bidderEmail" TEXT NOT NULL,
-          "brandName" TEXT NOT NULL,
-          "website" TEXT,
-          "logoUrl" TEXT,
-          "amount" REAL NOT NULL,
-          "status" TEXT NOT NULL DEFAULT 'PENDING',
-          "dodoSessionId" TEXT UNIQUE,
-          "dodoPaymentId" TEXT,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY ("spotId") REFERENCES "Spot" ("id") ON DELETE CASCADE
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "Payment" (
-          "id" TEXT PRIMARY KEY,
-          "bidId" TEXT NOT NULL UNIQUE,
-          "dodoSessionId" TEXT,
-          "dodoPaymentId" TEXT,
-          "status" TEXT NOT NULL DEFAULT 'PENDING',
-          "amount" REAL NOT NULL,
-          "currency" TEXT NOT NULL DEFAULT 'USD',
-          "metadata" TEXT,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY ("bidId") REFERENCES "Bid" ("id") ON DELETE CASCADE
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "Winner" (
-          "id" TEXT PRIMARY KEY,
-          "spotId" TEXT NOT NULL UNIQUE,
-          "bidId" TEXT NOT NULL UNIQUE,
-          "brandName" TEXT NOT NULL,
-          "bidderName" TEXT NOT NULL,
-          "bidderEmail" TEXT NOT NULL,
-          "website" TEXT,
-          "logoUrl" TEXT,
-          "winningAmount" REAL NOT NULL,
-          "status" TEXT NOT NULL DEFAULT 'CONFIRMED',
-          "stickerStatus" TEXT NOT NULL DEFAULT 'WINNER_CONFIRMED',
-          "proofImageUrl" TEXT,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY ("spotId") REFERENCES "Spot" ("id") ON DELETE CASCADE,
-          FOREIGN KEY ("bidId") REFERENCES "Bid" ("id") ON DELETE CASCADE
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "StickerInstallation" (
-          "id" TEXT PRIMARY KEY,
-          "spotId" TEXT NOT NULL,
-          "brandName" TEXT NOT NULL,
-          "stickerStatus" TEXT NOT NULL DEFAULT 'WINNER_CONFIRMED',
-          "proofImageUrl" TEXT,
-          "notes" TEXT,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY ("spotId") REFERENCES "Spot" ("id") ON DELETE CASCADE
-        );
-      `);
-
-      await db.$executeRawUnsafe(`
-        CREATE TABLE IF NOT EXISTS "AdminConfig" (
-          "id" TEXT PRIMARY KEY DEFAULT 'default_config',
-          "outbidPolicy" TEXT NOT NULL DEFAULT 'V1_MANUAL_REVIEW',
-          "siteActive" BOOLEAN NOT NULL DEFAULT 1,
-          "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-
-      // 2. Ensure initial Auction and 10 spots exist
+      // Ensure initial Auction and 10 spots exist
       let auction = await db.auction.findFirst();
       if (!auction) {
         auction = await db.auction.create({
@@ -208,7 +81,7 @@ export async function ensureDatabase(): Promise<void> {
 
       globalForPrisma.dbInitialized = true;
     } catch (err) {
-      console.error('Error in ensureDatabase():', err);
+      console.warn('ensureDatabase note:', err);
     } finally {
       initPromise = null;
     }
