@@ -118,8 +118,7 @@ export async function GET() {
       },
     });
 
-    // Track real visit and get live metrics
-    await recordPageView();
+    // Get live metrics
     const { liveVisitors, totalViews } = await getRealMetrics();
 
     return NextResponse.json({

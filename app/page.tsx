@@ -68,6 +68,14 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    // Record 1 page view per visitor session
+    try {
+      if (!sessionStorage.getItem('bml_pv_recorded')) {
+        sessionStorage.setItem('bml_pv_recorded', '1');
+        fetch('/api/analytics/view', { method: 'POST' }).catch(() => {});
+      }
+    } catch {}
+
     loadAuctionData();
 
     let eventSource: EventSource | null = null;

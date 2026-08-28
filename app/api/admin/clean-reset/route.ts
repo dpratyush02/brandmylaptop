@@ -61,6 +61,17 @@ export async function GET(request: NextRequest) {
           stickerStatus: 'PENDING',
         },
       });
+    // 4. Optionally sync page views if ?views= is provided
+    const viewsParam = request.nextUrl.searchParams.get('views');
+    if (viewsParam) {
+      const targetViews = parseInt(viewsParam, 10);
+      if (!isNaN(targetViews) && targetViews >= 0) {
+        await db.adminConfig.upsert({
+          where: { id: 'default_config' },
+          update: { pageViews: targetViews },
+          create: { id: 'default_config', pageViews: targetViews },
+        });
+      }
     }
 
     return NextResponse.json({
