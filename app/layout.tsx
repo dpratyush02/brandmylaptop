@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CurrencyProvider } from "@/components/currency/CurrencyProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-sans",
@@ -68,6 +69,7 @@ export default function RootLayout({
     <html lang="en" className={`${instrumentSans.variable} ${jetbrainsMono.variable} dark scroll-smooth`}>
       <body className="bg-black text-[#f3f3ee] font-sans antialiased min-h-screen">
         <CurrencyProvider>{children}</CurrencyProvider>
+        <Analytics />
       </body>
     </html>
   );

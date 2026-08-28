@@ -1,13 +1,17 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
+import { recordHeartbeat, removeHeartbeat, getRealMetrics } from '@/lib/presence';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const encoder = new TextEncoder();
+  const clientId = `client_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 
   const customReadable = new ReadableStream({
     async start(controller) {
+      recordHeartbeat(clientId);
+
       // Send initial keep-alive comment
       controller.enqueue(encoder.encode(': keep-alive\n\n'));
 
@@ -30,9 +34,15 @@ export async function GET(request: NextRequest) {
           });
 
           if (auction) {
+            recordHeartbeat(clientId);
+            const metrics = getRealMetrics();
             const data = JSON.stringify({
               type: 'AUCTION_UPDATE',
               auction,
+              stats: {
+                liveVisitors: metrics.liveVisitors,
+                totalViews: metrics.totalViews,
+              },
               serverTime: new Date().toISOString(),
             });
             controller.enqueue(encoder.encode(`data: ${data}\n\n`));
@@ -56,6 +66,7 @@ export async function GET(request: NextRequest) {
 
       // Clean up on disconnect
       request.signal.addEventListener('abort', () => {
+        removeHeartbeat(clientId);
         clearInterval(interval);
       });
     },

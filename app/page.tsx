@@ -38,8 +38,8 @@ export default function HomePage() {
     totalSpots: 10,
     totalClicks: 0,
     totalBidsCount: 0,
-    liveVisitors: 38,
-    totalViews: 14280,
+    liveVisitors: 1,
+    totalViews: 1,
     highestBid: null,
     recentBids: [],
   });

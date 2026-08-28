@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { INITIAL_SPOTS } from '@/lib/demo-data';
+import { recordPageView, getRealMetrics } from '@/lib/presence';
 
 export const dynamic = 'force-dynamic';
 
@@ -118,12 +119,9 @@ export async function GET() {
       },
     });
 
-    // Realistic dynamic visitor simulation based on time
-    const minuteSeed = Math.floor(Date.now() / 60000);
-    const baseVisitors = 38;
-    const visitorFluctuation = ((minuteSeed * 7 + 13) % 19) - 6;
-    const liveVisitors = Math.max(18, baseVisitors + visitorFluctuation);
-    const totalViews = 14280 + Math.floor((Date.now() - 1700000000000) / 180000);
+    // Track real visit and get live metrics
+    recordPageView();
+    const { liveVisitors, totalViews } = getRealMetrics();
 
     return NextResponse.json({
       success: true,
@@ -177,8 +175,8 @@ export async function GET() {
         totalSpots: 10,
         totalClicks: 0,
         totalBidsCount: 0,
-        liveVisitors: 38,
-        totalViews: 14280,
+        liveVisitors: getRealMetrics().liveVisitors,
+        totalViews: getRealMetrics().totalViews,
       },
       serverTime: new Date().toISOString(),
     });
