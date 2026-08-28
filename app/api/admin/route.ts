@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'RESET_DEMO_DATA') {
-      // Clear and reseed demo data
+      // Clear all bids, payments, winners and reset to clean unbid state
       await db.payment.deleteMany({});
       await db.winner.deleteMany({});
       await db.stickerInstallation.deleteMany({});
@@ -205,21 +205,17 @@ export async function POST(request: NextRequest) {
       await db.spot.deleteMany({});
       await db.auction.deleteMany({});
 
-      const startTime = new Date();
-      const endTime = new Date(Date.now() + 72 * 60 * 60 * 1000);
-
       const auction = await db.auction.create({
         data: {
-          title: 'BrandMyLaptop.space Launch Auction',
-          status: 'ACTIVE',
-          startTime,
-          endTime,
+          title: 'BrandMyLaptop Launch Auction',
+          status: 'PENDING_FIRST_BID',
           totalRaised: 0,
+          endTime: new Date(Date.now() + 72 * 60 * 60 * 1000),
         },
       });
 
       for (const s of INITIAL_SPOTS) {
-        const spot = await db.spot.create({
+        await db.spot.create({
           data: {
             auctionId: auction.id,
             number: s.number,
@@ -227,34 +223,21 @@ export async function POST(request: NextRequest) {
             size: s.size,
             dimensions: s.dimensions,
             startingPrice: s.startingPrice,
-            currentBid: s.currentBid,
-            minBidIncrement: s.minBidIncrement,
-            currentBidderName: s.currentBidderName || null,
-            currentBrandName: s.currentBrandName || null,
-            currentLogoUrl: s.currentLogoUrl || null,
-            currentWebsite: s.currentWebsite || null,
-            status: s.status,
-            bidCount: s.bidCount,
+            currentBid: 0,
+            minBidIncrement: s.minBidIncrement || 1,
+            currentBidderName: null,
+            currentBrandName: null,
+            currentLogoUrl: null,
+            currentWebsite: null,
+            status: 'AVAILABLE',
+            bidCount: 0,
+            clicksCount: 0,
+            stickerStatus: 'PENDING',
           },
         });
-
-        if (s.currentBid > 0 && s.currentBrandName) {
-          await db.bid.create({
-            data: {
-              spotId: spot.id,
-              bidderName: s.currentBidderName || 'Early Sponsor',
-              bidderEmail: `sponsor_${s.number}@example.com`,
-              brandName: s.currentBrandName,
-              website: s.currentWebsite,
-              logoUrl: s.currentLogoUrl,
-              amount: s.currentBid,
-              status: 'CONFIRMED',
-            },
-          });
-        }
       }
 
-      return NextResponse.json({ success: true, message: 'Reset to fresh demo data!' });
+      return NextResponse.json({ success: true, message: 'Clean slate reset! All bids cleared.' });
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 const INITIAL_SPOTS_CATALOG = [
-  { number: 1, position: 'Top Left', size: 'Medium', dimensions: '8.0cm × 5.0cm', startingPrice: 5, minBidIncrement: 1 },
+  { number: 1, position: 'Top Left', size: 'Medium', dimensions: '8.0cm × 5.0cm', startingPrice: 1, minBidIncrement: 1 },
   { number: 2, position: 'Top Center', size: 'Large', dimensions: '9.5cm × 5.5cm', startingPrice: 10, minBidIncrement: 1 },
   { number: 3, position: 'Top Right', size: 'Large', dimensions: '9.5cm × 5.5cm', startingPrice: 30, minBidIncrement: 1 },
   { number: 4, position: 'Middle Left', size: 'Standard', dimensions: '7.0cm × 4.5cm', startingPrice: 20, minBidIncrement: 1 },
@@ -197,6 +197,11 @@ export async function ensureDatabase(): Promise<void> {
               clicksCount: 0,
               stickerStatus: 'PENDING',
             },
+          });
+        } else if (existing.currentBid === 0 && existing.startingPrice !== s.startingPrice) {
+          await db.spot.update({
+            where: { id: existing.id },
+            data: { startingPrice: s.startingPrice },
           });
         }
       }
